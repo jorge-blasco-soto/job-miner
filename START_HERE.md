@@ -11,7 +11,7 @@ JobMiner automatically finds and filters senior tech jobs at well-established co
 - **Runs** automatically every day (via GitHub Actions)
 - **Costs** $0.00 - 100% free!
 
-## ⚡ Quick Start (Pick One)
+## ⚡ Quick Start (Pick One) 
 
 ### Option A: Automated (GitHub Actions) - RECOMMENDED
 **Best for:** Set it and forget it
