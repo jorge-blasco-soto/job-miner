@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  jobminer:
+    build: .
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama2:7b
+      - TARGET_ROLES=data engineer,senior data engineer,software engineer,solutions architect
+      - MIN_EMPLOYEES=200
+      - MIN_YEARS_IN_BUSINESS=5
+      - REMOTE_ONLY=true
+      - PREFER_PUBLIC_COMPANIES=true
+      - MAX_JOBS_PER_RUN=100
+      - HEADLESS_BROWSER=true
+      - DATA_DIR=/app/data
+      - OUTPUT_FORMAT=json,csv
+    volumes:
+      - ./data:/app/data
+      - ./jobminer.log:/app/jobminer.log
+    command: |
+      sh -c "
+        echo 'Waiting for Ollama to be ready...' &&
+        sleep 10 &&
+        echo 'Pulling LLM model...' &&
+        curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"llama2:7b\"}' &&
+        sleep 30 &&
+        echo 'Starting job scraper...' &&
+        python -m jobminer.main
+      "
+
+volumes:
+  ollama_data:

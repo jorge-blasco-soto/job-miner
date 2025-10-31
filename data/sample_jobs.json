@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sample_001",
+    "title": "Senior Data Engineer",
+    "company": "Snowflake",
+    "url": "https://careers.snowflake.com/sample",
+    "location": "Remote",
+    "is_remote": true,
+    "description": "Join our data platform team to build scalable solutions...",
+    "relevance_score": 0.95,
+    "llm_analysis": "Excellent match - senior data engineering role at a leading cloud data platform company. Remote work, requires 5+ years experience with Python and SQL.",
+    "scraped_at": "2024-10-31T12:00:00"
+  },
+  {
+    "id": "sample_002",
+    "title": "Solutions Architect",
+    "company": "Databricks",
+    "url": "https://databricks.com/company/careers/sample",
+    "location": "Remote - US",
+    "is_remote": true,
+    "description": "Help enterprise customers architect solutions on our platform...",
+    "relevance_score": 0.88,
+    "llm_analysis": "Strong match - solutions architect role at premier data/AI company. Involves customer-facing work and technical architecture design.",
+    "scraped_at": "2024-10-31T12:00:00"
+  }
+]
