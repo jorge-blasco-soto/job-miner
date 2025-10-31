@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     openai_base_url: str | None = None
     openai_model: str = "gpt-3.5-turbo"
 
+    # Groq Configuration (free tier, OpenAI-compatible)
+    groq_api_key: str | None = None
+    groq_model: str = "llama-3.1-8b-instant"  # Fast and free
+
     # Job Search Configuration
     target_roles: str = "data engineer,senior data engineer,software engineer,solutions architect"
     min_employees: int = 200

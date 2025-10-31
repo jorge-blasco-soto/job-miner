@@ -102,19 +102,21 @@ Respond in JSON format:
 class OpenAICompatibleFilter(LLMFilter):
     """LLM filter using OpenAI-compatible API (for small/free models)."""
 
-    def __init__(self):
+    def __init__(self, api_key: str = None, base_url: str = None, model: str = None):
         super().__init__()
         try:
             from openai import OpenAI
 
-            if not settings.openai_api_key:
-                raise ValueError("OpenAI API key not configured")
+            # Use provided values or fall back to settings
+            api_key = api_key or settings.openai_api_key
+            if not api_key:
+                raise ValueError("API key not configured")
 
             self.client = OpenAI(
-                api_key=settings.openai_api_key,
-                base_url=settings.openai_base_url
+                api_key=api_key,
+                base_url=base_url or settings.openai_base_url
             )
-            self.model = settings.openai_model
+            self.model = model or settings.openai_model
             logger.info(f"Initialized OpenAI-compatible filter with model: {self.model}")
         except ImportError:
             logger.error("OpenAI package not installed. Install with: pip install openai")
@@ -163,9 +165,31 @@ Respond in JSON: {{"score": 0.0-1.0, "analysis": "explanation"}}
             return 0.0, f"Analysis failed: {str(e)}"
 
 
+class GroqFilter(OpenAICompatibleFilter):
+    """LLM filter using Groq's free API (OpenAI-compatible)."""
+
+    def __init__(self):
+        if not settings.groq_api_key:
+            raise ValueError("Groq API key not configured. Get one free at https://console.groq.com")
+
+        super().__init__(
+            api_key=settings.groq_api_key,
+            base_url="https://api.groq.com/openai/v1",
+            model=settings.groq_model
+        )
+        logger.info(f"Initialized Groq filter with model: {self.model} (FREE)")
+
+
 def get_llm_filter() -> Optional[LLMFilter]:
     """Get the appropriate LLM filter based on configuration."""
-    # Try Ollama first (free and local)
+    # Try Groq first (free cloud API)
+    if settings.groq_api_key:
+        try:
+            return GroqFilter()
+        except Exception as e:
+            logger.warning(f"Could not initialize Groq filter: {e}")
+
+    # Try Ollama second (free and local)
     try:
         return OllamaFilter()
     except Exception as e:
@@ -178,7 +202,7 @@ def get_llm_filter() -> Optional[LLMFilter]:
         except Exception as e:
             logger.warning(f"Could not initialize OpenAI filter: {e}")
 
-    logger.error("No LLM filter available. Please configure Ollama or OpenAI.")
+    logger.error("No LLM filter available. Please configure Groq, Ollama, or OpenAI.")
     return None
 
 
