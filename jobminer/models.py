@@ -78,8 +78,8 @@ class ScrapingResult(BaseModel):
     """Result of a scraping session."""
     run_id: str
     timestamp: datetime = Field(default_factory=datetime.now)
-    jobs_found: int
-    jobs_filtered: int
-    jobs_saved: int
-    errors: List[str] = []
-    sources: List[str] = []
+    jobs_found: int = 0
+    jobs_filtered: int = 0
+    jobs_saved: int = 0
+    errors: List[str] = Field(default_factory=list)
+    sources: List[str] = Field(default_factory=list)
