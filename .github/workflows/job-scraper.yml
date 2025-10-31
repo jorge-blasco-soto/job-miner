@@ -1,0 +1,45 @@
+name: Job Scraper
+
+on:
+  # Run daily at 9 AM UTC (adjust timezone as needed)
+  schedule:
+    - cron: '0 9 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+  
+  # Run on push to main (optional, remove if not desired)
+  push:
+    branches:
+      - main
+
+jobs:
+  scrape-and-filter:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      
+      - name: Run job scraper
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python -m jobminer.main
+      
+      - name: Commit and push results
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update job data [automated]" && git push)
